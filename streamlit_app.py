@@ -1,42 +1,37 @@
+import numpy as np
+import pandas as pd
+import yfinance as yf
+import plotly.graph_objs as go
 import streamlit as st
-import yfinance as finance
 
+st.title('Live Stock Price')
 
-def get_ticker(name):
-	company = finance.Ticker(name) # google
-	return company
+stock = st.text_input("Please enter stock ticker: ")
+data = yf.download(tickers=stock, period='1d', interval='1m')
 
+fig = go.Figure()
 
-# Project Details
-st.title("Build and Deploy Stock Market App Using Streamlit")
-st.header("A Basic Data Science Web Application")
-st.sidebar.header("Geeksforgeeks \n TrueGeeks")
+fig.add_trace(go.Candlestick(x=data.index,
+                            open=data['Open'],
+                            high=data['High'],
+                            low=data['Low'],
+                            close=data['Close'], name='market data'))
 
-company1 = get_ticker("GOOGL")
-company2 = get_ticker("MSFT")
+fig.update_layout(
+    title='Stock live share price',
+    yaxis_title='Stock Price($USD)')
 
-# fetches the data: Open, Close, High, Low and Volume
-google = finance.download("GOOGL", start="2021-10-01", end="2021-10-01")
-microsoft = finance.download("MSFT", start="2021-10-01", end="2021-10-01")
-
-# Valid periods: 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max
-data1 = company1.history(period="3mo")
-data2 = company2.history(period="3mo")
-
-# markdown syntax
-st.write("""
-### Google
-""")
-
-# detailed summary on Google
-st.write(company1.info['longBusinessSummary'])
-st.write(google)
-
-# plots the graph
-st.line_chart(data1.values)
-
-st.write("""
-### Microsoft
-""")
-st.write(company2.info['longBusinessSummary'], "\n", microsoft)
-st.line_chart(data2.values)
+fig.update_xaxes(
+    rangeslider_visible=True,
+    rangeselector=dict(
+        buttons=list((
+            dict(count=15, label="15m", step="minute", stepmode="backward"),
+            dict(count=45, label="45m", step="minute", stepmode="backward"),
+            dict(count=1, label="HTD", step="hour", stepmode="todate"),
+            dict(count=3, label="3h", step="hour", stepmode="backward"),
+            dict(step="all")
+        ))
+    )
+)
+st.subheader("Live share price graph")
+st.plotly_chart(fig)
