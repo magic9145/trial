@@ -11,3 +11,5 @@ if start_date < end_date:
     st.sidebar.success('Start date: `%s`\n\nEnd date:`%s`' % (start_date, end_date))
 else:
     st.sidebar.error('Error: End date must fall after start date.')
+
+    
