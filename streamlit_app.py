@@ -1,20 +1,60 @@
-import numpy as np
-import plotly.figure_factory as ff
+# import the streamlit library
 import streamlit as st
 
-# Add histogram data
-x1 = np.random.randn(200) - 2
-x2 = np.random.randn(200)
-x3 = np.random.randn(200) + 2
+# give a title to our app
+st.title('Welcome to BMI Calculator')
 
-# Group data together
-hist_data = [x1, x2, x3]
+# TAKE WEIGHT INPUT in kgs
+weight = st.number_input("Enter your weight (in kgs)")
 
-group_labels = ['Group 1', 'Group 2', 'Group 3']
+# TAKE HEIGHT INPUT
+# radio button to choose height format
+status = st.radio('Select your height format: ',
+				('cms', 'meters', 'feet'))
 
-# Create distplot with custom bin_size
-fig = ff.create_distplot(
-        hist_data, group_labels, bin_size=[.1, .25, .5])
+# compare status value
+if(status == 'cms'):
+	# take height input in centimeters
+	height = st.number_input('Centimeters')
 
-# Plot!
-st.plotly_chart(fig, use_container_width=True)
+	try:
+		bmi = weight / ((height/100)**2)
+	except:
+		st.text("Enter some value of height")
+
+elif(status == 'meters'):
+	# take height input in meters
+	height = st.number_input('Meters')
+
+	try:
+		bmi = weight / (height ** 2)
+	except:
+		st.text("Enter some value of height")
+
+else:
+	# take height input in feet
+	height = st.number_input('Feet')
+
+	# 1 meter = 3.28
+	try:
+		bmi = weight / (((height/3.28))**2)
+	except:
+		st.text("Enter some value of height")
+
+# check if the button is pressed or not
+if(st.button('Calculate BMI')):
+
+	# print the BMI INDEX
+	st.text("Your BMI Index is {}.".format(bmi))
+
+	# give the interpretation of BMI index
+	if(bmi < 16):
+		st.error("You are Extremely Underweight")
+	elif(bmi >= 16 and bmi < 18.5):
+		st.warning("You are Underweight")
+	elif(bmi >= 18.5 and bmi < 25):
+		st.success("Healthy")
+	elif(bmi >= 25 and bmi < 30):
+		st.warning("Overweight")
+	elif(bmi >= 30):
+		st.error("Extremely Overweight")
